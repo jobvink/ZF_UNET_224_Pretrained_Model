@@ -118,5 +118,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    train_unet((args.input_shape_x, args.input_shape_y, args.input_channels), (args.output_channels,), args.batch_size,
+    train_unet((args.input_shape_x, args.input_shape_y, args.input_channels), (args.output_channels,), int(args.batch_size),
                args.model_name, args.optimizer)
