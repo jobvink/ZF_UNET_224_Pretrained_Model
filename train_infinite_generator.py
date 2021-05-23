@@ -5,14 +5,15 @@
 
 __author__ = 'ZFTurbo: https://kaggle.com/zfturbo'
 
+import argparse
 import os
 import cv2
 import random
 import numpy as np
 import pandas as pd
-from keras.optimizers import Adam, SGD
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from keras import __version__
+from tensorflow.keras.optimizers import Adam, SGD
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras import __version__
 from zf_unet_224_model import *
 
 
@@ -29,9 +30,9 @@ def gen_random_image():
     img[:, :, 2] = dark_color2
 
     # Object
-    light_color0 = random.randint(dark_color0+1, 255)
-    light_color1 = random.randint(dark_color1+1, 255)
-    light_color2 = random.randint(dark_color2+1, 255)
+    light_color0 = random.randint(dark_color0 + 1, 255)
+    light_color1 = random.randint(dark_color1 + 1, 255)
+    light_color2 = random.randint(dark_color2 + 1, 255)
     center_0 = random.randint(0, 224)
     center_1 = random.randint(0, 224)
     r1 = random.randint(10, 56)
@@ -61,33 +62,28 @@ def batch_generator(batch_size):
             mask_list.append([mask])
 
         image_list = np.array(image_list, dtype=np.float32)
-        if K.image_dim_ordering() == 'th':
-            image_list = image_list.transpose((0, 3, 1, 2))
         image_list = preprocess_input(image_list)
         mask_list = np.array(mask_list, dtype=np.float32)
         mask_list /= 255.0
         yield image_list, mask_list
 
 
-def train_unet():
-    out_model_path = 'zf_unet_224.h5'
-    epochs = 200
-    patience = 20
-    batch_size = 16
-    optim_type = 'SGD'
+def train_unet(input_shape=(224, 224, 3), output_shape=(1,), epochs=200, batch_size=16, model_name='zf_unet_224.h5',
+               optimizer='SGD'):
     learning_rate = 0.001
-    model = ZF_UNET_224()
-    if os.path.isfile(out_model_path):
-        model.load_weights(out_model_path)
+    model = ZF_UNET_224(input_shape=input_shape, output_shape=output_shape)
+    if os.path.isfile(model_name):
+        model.load_weights(model_name)
 
-    if optim_type == 'SGD':
+    if optimizer == 'SGD':
         optim = SGD(lr=learning_rate, decay=1e-6, momentum=0.9, nesterov=True)
     else:
         optim = Adam(lr=learning_rate)
     model.compile(optimizer=optim, loss=dice_coef_loss, metrics=[dice_coef])
 
     callbacks = [
-        ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-9, epsilon=0.00001, verbose=1, mode='min'),
+        ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-9, epsilon=0.00001, verbose=1,
+                          mode='min'),
         # EarlyStopping(monitor='val_loss', patience=patience, verbose=0),
         ModelCheckpoint('zf_unet_224_temp.h5', monitor='val_loss', save_best_only=True, verbose=0),
     ]
@@ -102,24 +98,25 @@ def train_unet():
         verbose=2,
         callbacks=callbacks)
 
-    model.save_weights(out_model_path)
+    model.save_weights(model_name)
     pd.DataFrame(history.history).to_csv('zf_unet_224_train.csv', index=False)
     print('Training is finished (weights zf_unet_224.h5 and log zf_unet_224_train.csv are generated )...')
 
 
 if __name__ == '__main__':
-    if K.backend() == 'tensorflow':
-        try:
-            from tensorflow import __version__ as __tensorflow_version__
-            print('Tensorflow version: {}'.format(__tensorflow_version__))
-        except:
-            print('Tensorflow is unavailable...')
-    else:
-        try:
-            from theano.version import version as __theano_version__
-            print('Theano version: {}'.format(__theano_version__))
-        except:
-            print('Theano is unavailable...')
     print('Keras version {}'.format(__version__))
-    print('Dim ordering:', K.image_dim_ordering())
-    train_unet()
+
+    parser = argparse.ArgumentParser(description='Evaluations of agents for assignment 2')
+
+    parser.add_argument('--input-shape-x', type=int, default=224)
+    parser.add_argument('--input-shape-y', type=int, default=224)
+    parser.add_argument('--input-channels', type=int, default=3)
+    parser.add_argument('--output-channels', type=int, default=1)
+    parser.add_argument('--batch-size', type=int, default=32)
+    parser.add_argument('--model-name', type=str, default='zf_unet_224.h5')
+    parser.add_argument('--optimizer', type=str, default='SGD')
+
+    args = parser.parse_args()
+
+    train_unet((args.input_shape_x, args.input_shape_y, args.input_channels), (args.output_channels,), args.batch_size,
+               args.model_name, args.optimizer)
