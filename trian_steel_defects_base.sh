@@ -1,0 +1,1 @@
+python3 train_infinite_generator.py --input-shape-x 1600 --input-shape-y 256 --input-channels 3 --output-channels 4

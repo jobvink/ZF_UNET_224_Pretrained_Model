@@ -112,11 +112,12 @@ if __name__ == '__main__':
     parser.add_argument('--input-shape-y', type=int, default=224)
     parser.add_argument('--input-channels', type=int, default=3)
     parser.add_argument('--output-channels', type=int, default=1)
+    parser.add_argument('--epochs', type=int, default=200)
     parser.add_argument('--batch-size', type=int, default=32)
     parser.add_argument('--model-name', type=str, default='zf_unet_224.h5')
     parser.add_argument('--optimizer', type=str, default='SGD')
 
     args = parser.parse_args()
 
-    train_unet((args.input_shape_x, args.input_shape_y, args.input_channels), (args.output_channels,), int(args.batch_size),
-               args.model_name, args.optimizer)
+    train_unet((args.input_shape_x, args.input_shape_y, args.input_channels), (args.output_channels,), args.epochs,
+               args.batch_size, args.model_name, args.optimizer)
