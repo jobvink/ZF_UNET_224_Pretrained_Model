@@ -19,7 +19,7 @@ from zf_unet_224_model import *
 
 def gen_random_image(input_shape, output_shape):
     img = np.zeros(input_shape, dtype=np.uint8)
-    mask = np.zeros(output_shape, dtype=np.uint8)
+    mask = np.zeros((input_shape[0], input_shape[1], *output_shape), dtype=np.uint8)
 
     # Background
     dark_color0 = random.randint(0, 100)
