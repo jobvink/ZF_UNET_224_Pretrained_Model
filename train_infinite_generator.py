@@ -64,7 +64,7 @@ def batch_generator(batch_size, input_shape, output_shape):
         image_list = np.array(image_list, dtype=np.float32)
         image_list = preprocess_input(image_list)
         mask_list = np.array(mask_list, dtype=np.float32)
-        mask_list /= 255.0
+        mask_list = np.true_divide(mask_list, 255)
         yield image_list, mask_list
 
 
