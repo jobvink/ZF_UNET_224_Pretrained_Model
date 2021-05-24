@@ -60,12 +60,12 @@ def bce_dice_loss(y_true, y_pred):
     return binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
 
 
-def double_conv_layer(x, size, dropout=0.0, batch_norm=True):
-    conv = Conv2D(size, (3, 3), padding='same')(x)
+def double_conv_layer(x, size, kernel_size=(3, 3), dropout=0.0, batch_norm=True):
+    conv = Conv2D(size, kernel_size, padding='same')(x)
     if batch_norm:
         conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
-    conv = Conv2D(size, (3, 3), padding='same')(conv)
+    conv = Conv2D(size, kernel_size, padding='same')(conv)
     if batch_norm:
         conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
@@ -108,7 +108,7 @@ def ZF_UNET_224(dropout_val=0.2, input_shape=(224, 224, 3), output_shape=(1,)):
     up_conv_112 = double_conv_layer(up_112, 2 * filters)
 
     up_224 = concatenate([UpSampling2D(size=(2, 2))(up_conv_112), conv_224])
-    up_conv_224 = double_conv_layer(up_224, filters, dropout_val)
+    up_conv_224 = double_conv_layer(up_224, filters, dropout=dropout_val)
 
     conv_final = Conv2D(*output_shape, (1, 1))(up_conv_224)
     conv_final = Activation('sigmoid')(conv_final)
