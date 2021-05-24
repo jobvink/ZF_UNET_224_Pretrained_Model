@@ -52,12 +52,12 @@ def gen_random_image(input_shape, output_shape):
     return img, mask
 
 
-def batch_generator(batch_size):
+def batch_generator(batch_size, input_shape, output_shape):
     while True:
         image_list = []
         mask_list = []
         for i in range(batch_size):
-            img, mask = gen_random_image()
+            img, mask = gen_random_image(input_shape, output_shape)
             image_list.append(img)
             mask_list.append([mask])
 
@@ -90,10 +90,10 @@ def train_unet(input_shape=(224, 224, 3), output_shape=(1,), epochs=200, batch_s
 
     print('Start training...')
     history = model.fit_generator(
-        generator=batch_generator(batch_size),
+        generator=batch_generator(batch_size, input_shape, output_shape),
         epochs=epochs,
         steps_per_epoch=200,
-        validation_data=batch_generator(batch_size),
+        validation_data=batch_generator(batch_size, input_shape, output_shape),
         validation_steps=200,
         verbose=2,
         callbacks=callbacks)
