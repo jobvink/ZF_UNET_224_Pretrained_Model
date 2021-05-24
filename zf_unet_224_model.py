@@ -16,7 +16,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization
 from tensorflow.keras.layers import SpatialDropout2D, Activation
 from tensorflow.keras.layers import concatenate
-from tensorflow.python.keras.losses import binary_crossentropy
+from tensorflow.keras.losses import binary_crossentropy
 
 
 def preprocess_input(x):
