@@ -48,11 +48,11 @@ def dice_coef_loss(y_true, y_pred):
 
 def double_conv_layer(x, size, dropout=0.0, batch_norm=True):
     conv = Conv2D(size, (3, 3), padding='same')(x)
-    if batch_norm is True:
+    if batch_norm:
         conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
     conv = Conv2D(size, (3, 3), padding='same')(conv)
-    if batch_norm is True:
+    if batch_norm:
         conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
     if dropout > 0:

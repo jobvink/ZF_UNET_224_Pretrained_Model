@@ -17,9 +17,9 @@ from tensorflow.keras import __version__
 from zf_unet_224_model import *
 
 
-def gen_random_image():
-    img = np.zeros((224, 224, 3), dtype=np.uint8)
-    mask = np.zeros((224, 224), dtype=np.uint8)
+def gen_random_image(input_shape, output_shape):
+    img = np.zeros(input_shape, dtype=np.uint8)
+    mask = np.zeros(output_shape, dtype=np.uint8)
 
     # Background
     dark_color0 = random.randint(0, 100)
@@ -38,7 +38,7 @@ def gen_random_image():
     r1 = random.randint(10, 56)
     r2 = random.randint(10, 56)
     cv2.ellipse(img, (center_0, center_1), (r1, r2), 0, 0, 360, (light_color0, light_color1, light_color2), -1)
-    cv2.ellipse(mask, (center_0, center_1), (r1, r2), 0, 0, 360, 255, -1)
+    cv2.ellipse(mask[random.randint(0, *output_shape)], (center_0, center_1), (r1, r2), 0, 0, 360, 255, -1)
 
     # White noise
     density = random.uniform(0, 0.1)
