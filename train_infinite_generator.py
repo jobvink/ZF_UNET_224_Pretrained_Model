@@ -58,13 +58,12 @@ def batch_generator(batch_size, input_shape, output_shape):
         mask_list = []
         for i in range(batch_size):
             img, mask = gen_random_image(input_shape, output_shape)
+            img = np.true_divide(img, 256) - .5
             image_list.append(img)
-            mask_list.append([mask])
+            mask_list.append(np.true_divide(mask, 255))
 
         image_list = np.array(image_list, dtype=np.float32)
-        image_list = preprocess_input(image_list)
         mask_list = np.array(mask_list, dtype=np.float32)
-        mask_list = np.true_divide(mask_list, 255)
         yield image_list, mask_list
 
 
