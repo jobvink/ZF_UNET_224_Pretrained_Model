@@ -22,32 +22,31 @@ def gen_random_image(input_shape, output_shape):
     mask = np.zeros((input_shape[0], input_shape[1], *output_shape), dtype=np.uint8)
 
     # Background
-    dark_color0 = random.randint(0, 100)
-    dark_color1 = random.randint(0, 100)
-    dark_color2 = random.randint(0, 100)
-    img[:, :, 0] = dark_color0
-    img[:, :, 1] = dark_color1
-    img[:, :, 2] = dark_color2
+    dark_color = []
+    for i in range(input_shape[2]):
+        dark_color[i] = random.randint(0, 100)
+        img[:, :, i] = dark_color[i]
 
     # Object
-    light_color0 = random.randint(dark_color0 + 1, 255)
-    light_color1 = random.randint(dark_color1 + 1, 255)
-    light_color2 = random.randint(dark_color2 + 1, 255)
-    center_0 = random.randint(0, 224)
-    center_1 = random.randint(0, 224)
+    light_color = []
+    for i in range(input_shape[2]):
+        light_color[i] = random.randint(dark_color[i] + 1, 255)
+
+    center_0 = random.randint(0, input_shape[0] - 1)
+    center_1 = random.randint(0, input_shape[1] - 1)
     r1 = random.randint(10, 56)
     r2 = random.randint(10, 56)
-    cv2.ellipse(img, (center_0, center_1), (r1, r2), 0, 0, 360, (light_color0, light_color1, light_color2), -1)
-    cv2.ellipse(mask[:, :, random.randint(0, output_shape[0]-1)].copy(), (center_0, center_1), (r1, r2), 0, 0, 360, 255, -1)
+    cv2.ellipse(img, (center_0, center_1), (r1, r2), 0, 0, 360, light_color, -1)
+    ax = random.randint(0, output_shape[0]-1)
+    mask[:, :, ax] = cv2.ellipse(mask[:, :, ax].copy(), (center_0, center_1), (r1, r2), 0, 0, 360, 255, -1)
 
     # White noise
     density = random.uniform(0, 0.1)
-    for i in range(224):
-        for j in range(224):
+    for x in range(input_shape[0]):
+        for y in range(input_shape[1]):
             if random.random() < density:
-                img[i, j, 0] = random.randint(0, 255)
-                img[i, j, 1] = random.randint(0, 255)
-                img[i, j, 2] = random.randint(0, 255)
+                for i in range(input_shape[2]):
+                    img[x, y, i] = random.randint(0, 255)
 
     return img, mask
 
