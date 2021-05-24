@@ -107,7 +107,6 @@ def train_unet(input_shape=(224, 224, 3), output_shape=(1,), epochs=200, batch_s
         train_gen,
         epochs=epochs,
         validation_data=val_gen,
-        verbose=2,
         callbacks=callbacks)
 
     model.save_weights(model_name)
