@@ -22,13 +22,13 @@ def gen_random_image(input_shape, output_shape):
     mask = np.zeros((input_shape[0], input_shape[1], *output_shape), dtype=np.uint8)
 
     # Background
-    dark_color = []
+    dark_color = np.zeros(shape=(input_shape[2],))
     for i in range(input_shape[2]):
         dark_color[i] = random.randint(0, 100)
         img[:, :, i] = dark_color[i]
 
     # Object
-    light_color = []
+    light_color = np.zeros(shape=(input_shape[2],))
     for i in range(input_shape[2]):
         light_color[i] = random.randint(dark_color[i] + 1, 255)
 
