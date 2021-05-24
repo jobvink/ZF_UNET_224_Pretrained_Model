@@ -79,7 +79,7 @@ def train_unet(input_shape=(224, 224, 3), output_shape=(1,), epochs=200, batch_s
         optim = SGD(lr=learning_rate, decay=1e-6, momentum=0.9, nesterov=True)
     else:
         optim = Adam(lr=learning_rate)
-    model.compile(optimizer=optim, loss=dice_coef_loss, metrics=[dice_coef])
+    model.compile(optimizer=optim, loss=bce_dice_loss, metrics=[dice_coef])
 
     callbacks = [
         ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-9, epsilon=0.00001, verbose=1,

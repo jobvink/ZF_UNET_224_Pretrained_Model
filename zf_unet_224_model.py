@@ -16,6 +16,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization
 from tensorflow.keras.layers import SpatialDropout2D, Activation
 from tensorflow.keras.layers import concatenate
+from tensorflow.python.keras.losses import binary_crossentropy
 
 
 def preprocess_input(x):
@@ -44,6 +45,18 @@ def jacard_coef_loss(y_true, y_pred):
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
+
+def dice_loss(y_true, y_pred):
+    smooth = 1.
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = y_true_f * y_pred_f
+    score = (2. * K.sum(intersection) + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    return 1. - score
+
+def bce_dice_loss(y_true, y_pred):
+    return binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
+
 
 
 def double_conv_layer(x, size, dropout=0.0, batch_norm=True):
