@@ -46,21 +46,19 @@ class DataGenerator(Sequence):
         for i in range(input_shape[2]):
             light_color[i] = random.randint(dark_color[i] + 1, 255)
 
-        center_0 = random.randint(0, input_shape[0] - 1)
-        center_1 = random.randint(0, input_shape[1] - 1)
-        r1 = random.randint(10, 56)
-        r2 = random.randint(10, 56)
-        cv2.ellipse(img, (center_0, center_1), (r1, r2), 0, 0, 360, light_color, -1)
-        ax = random.randint(0, output_shape[0] - 1)
-        mask[:, :, ax] = cv2.ellipse(mask[:, :, ax].copy(), (center_0, center_1), (r1, r2), 0, 0, 360, 255, -1)
+        for c in range(10):
+            center_0 = random.randint(0, input_shape[0] - 1)
+            center_1 = random.randint(0, input_shape[1] - 1)
+            r1 = random.randint(10, 56)
+            r2 = random.randint(10, 56)
+            img = cv2.ellipse(img.copy(), (center_1, center_0), (r2, r1), 0, 0, 360, light_color, -1)
+            ax = random.randint(0, output_shape[0] - 1)
+            mask[:, :, ax] = cv2.ellipse(mask[:, :, ax].copy(), (center_1, center_0), (r2, r1), 0, 0, 360, 255, -1)
 
-        # White noise
-        density = random.uniform(0, 0.1)
-        for x in range(input_shape[0]):
-            for y in range(input_shape[1]):
-                if random.random() < density:
-                    for i in range(input_shape[2]):
-                        img[x, y, i] = random.randint(0, 255)
+        noise = np.zeros(input_shape, dtype=np.uint8)
+        cv2.randn(noise, 50, 25)
+        img += noise
+        img = np.clip(img, 0, 255)
 
         return img, mask
 
